@@ -13,7 +13,7 @@ Hi, am Ahmed Usman Hussain and Welcome to my CS-Learning-Journey repository! Thi
 ## Getting Started
 To get started with this repository, clone it to your local machine using:
 ```bash
-git clone https://github.com/yourusername/CS-Learning-Journey.git
+git clone https://github.com/ahmedhussainnn/CS-Learning-Journey.git
 ```
 ```bash
 /CS-Learning-Journey                  # Root directory of the repository
