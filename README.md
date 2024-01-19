@@ -48,7 +48,7 @@ git clone https://github.com/yourusername/CS-Learning-Journey.git
 - `Exercises/`: Contains categorized exercises for each topic learned.
 
 ## Using This Repository
-Navigate through the repository to under the different branches to find the relevant exercises to the branch. 
+Navigate through the repository to under the different branches to find the relevant exercises to the branch. Each branch has a README file 
 
 
 ### Practicing with Exercises
