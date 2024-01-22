@@ -1,0 +1,120 @@
+/* Base */
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Layout */
+
+#site-header {
+  background-color: #4CAF50;
+  padding: 1rem;
+}
+
+#primary-nav ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#primary-nav li {
+  margin: 0 1rem;
+}
+
+#site-content {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.box {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.project {
+  margin-bottom: 1rem;
+}
+
+/* Typography */
+
+h1 {
+  font-weight: bold;
+  font-size: 3rem;
+  letter-spacing: -0.05em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-weight: bold;
+  font-size: 2rem;
+  letter-spacing: -0.05em;
+}
+
+h3 {
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+}
+
+h4 {
+  font-size: 1.2rem;
+}
+
+h5 {
+  font-size: 1rem;
+}
+
+/* Colors */
+
+.highlight {
+  color: #4CAF50;
+}
+
+/* Media Queries */
+
+@media screen and (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  #site-content {
+    max-width: 100%;
+  }
+
+  #primary-nav li {
+    margin: 0 0.5rem;
+  }
+}
