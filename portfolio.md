@@ -80,7 +80,7 @@ Rankings:
 1. Megan Landau - Balanced skillset, thoroughness, and clarity in presentations.
 2. Kalyn Nakano - Clean and attractive design, solid front-end development skills.
 3. Victoria Holland - Variety of projects, but lacks structure and depth.
-4. Gautam Krishna - Specializes in AI and ML but overlooks design principles.
+4. Gautam Krishna - Knowledgeable in ML but overlooks good design principles.
 5. Lakshmi Chandana - Talented programmer but needs improvement in structuring and presenting her work.
 
 ---
