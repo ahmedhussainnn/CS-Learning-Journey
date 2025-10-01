@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmed Usman Hussain - Software Developer</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sage': '#7c8471',
+                        'terracotta': '#c4a484',
+                        'charcoal': '#1a1a1a',
+                        'ivory': '#f8f6f0',
+                        'gold': '#d4af37'
+                    },
+                    fontFamily: {
+                        'display': ['Playfair Display', 'serif'],
+                        'body': ['Inter', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Styles */
+        .hero-bg {
+            background: linear-gradient(135deg, #f8f6f0 0%, #e8e6e0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .content-overlay {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #7c8471, #c4a484);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #7c8471, #c4a484);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(124, 132, 113, 0.4);
+        }
+        
+        .skill-bar {
+            background: linear-gradient(90deg, #7c8471, #c4a484);
+            height: 8px;
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease-out;
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(10px);
+            background: rgba(248, 246, 240, 0.9);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: #7c8471;
+            border-radius: 50%;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.5rem;
+            width: 2px;
+            height: calc(100% - 1rem);
+            background: linear-gradient(to bottom, #7c8471, transparent);
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #7c8471;
+            box-shadow: 0 0 0 3px rgba(124, 132, 113, 0.1);
+        }
+        
+        .project-filter {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .project-filter.active {
+            background: #7c8471;
+            color: white;
+        }
+        
+        .project-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .project-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .project-card.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-ivory text-charcoal font-body">
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-sage/20">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="font-display text-2xl font-bold text-gradient">
+                    Ahmed Usman Hussain
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link hover:text-sage transition-colors">Home</a>
+                    <a href="#about" class="nav-link hover:text-sage transition-colors">About</a>
+                    <a href="#projects" class="nav-link hover:text-sage transition-colors">Projects</a>
+                    <a href="#skills" class="nav-link hover:text-sage transition-colors">Skills</a>
+                    <a href="#contact" class="nav-link hover:text-sage transition-colors">Contact</a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg min-h-screen flex items-center">
+        <canvas id="particle-canvas" class="particle-canvas"></canvas>
+        <div class="content-overlay w-full">
+            <div class="max-w-7xl mx-auto px-6 py-20">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-8">
+                        <div class="space-y-4">
+                            <h1 class="font-display text-6xl lg:text-7xl font-bold text-charcoal leading-tight">
+                                <span id="typed-name"></span>
+                            </h1>
+                            <div class="text-2xl lg:text-3xl text-sage font-medium">
+                                <span id="typed-title"></span>
+                            </div>
+                        </div>
+                        <p class="text-lg text-gray-600 leading-relaxed max-w-lg">
+                            Passionate software developer based in Germany, specializing in creating clean, 
+                            efficient, and user-friendly web applications. Currently exploring the depths of 
+                            modern web technologies and solving complex problems.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="#projects" class="btn-primary text-white px-8 py-4 rounded-lg font-medium text-center">
+                                View My Work
+                            </a>
+                            <a href="#contact" class="border-2 border-sage text-sage px-8 py-4 rounded-lg font-medium text-center hover:bg-sage hover:text-white transition-all">
+                                Get In Touch
+                            </a>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="aspect-square rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="resources/ahmed-portrait.png" alt="Ahmed Usman Hussain" 
+                                 class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-terracotta rounded-full opacity-20"></div>
+                        <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-sage rounded-full opacity-10"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <svg class="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-4xl lg:text-5xl font-bold text-charcoal mb-6">About Me</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    A dedicated software developer with a passion for creating elegant solutions to complex problems
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <div class="space-y-6 text-lg leading-relaxed text-gray-700">
+                        <p>
+                            Hello! I'm Ahmed Usman Hussain, a software developer currently based in Germany. 
+                            My journey into software development began with a fascination for how technology 
+                            can solve real-world problems and create meaningful experiences for users.
+                        </p>
+                        <p>
+                            Currently, I'm focused on mastering modern web technologies including HTML, CSS, 
+                            and JavaScript, while continuously exploring new frameworks and tools that push 
+                            the boundaries of what's possible on the web.
+                        </p>
+                        <p>
+                            When I'm not coding, you'll find me exploring the intersection of technology and 
+                            creativity, whether through analyzing complex datasets, crafting elegant LaTeX 
+                            documents, or simply enjoying a good book on software architecture.
+                        </p>
+                    </div>
+                    <div class="mt-8">
+                        <a href="#" class="btn-primary text-white px-6 py-3 rounded-lg font-medium inline-flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download Resume
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="reveal">
+                    <div class="bg-gray-50 rounded-2xl p-8">
+                        <h3 class="font-display text-2xl font-bold text-charcoal mb-6">Quick Facts</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-2 h-2 bg-sage rounded-full"></div>
+                                <span class="text-gray-700">Based in Germany</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-2 h-2 bg-terracotta rounded-full"></div>
+                                <span class="text-gray-700">Entry-level Software Developer</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-2 h-2 bg-sage rounded-full"></div>
+                                <span class="text-gray-700">Learning: HTML, CSS, JavaScript</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-2 h-2 bg-terracotta rounded-full"></div>
+                                <span class="text-gray-700">Interests: Problem-solving, Clean UI</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-2 h-2 bg-sage rounded-full"></div>
+                                <span class="text-gray-700">Hobbies: Movies, Music, Reading</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-ivory">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-4xl lg:text-5xl font-bold text-charcoal mb-6">My Projects</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    A showcase of my development journey, featuring projects that demonstrate 
+                    my skills in web development, data analysis, and technical documentation.
+                </p>
+            </div>
+            
+            <!-- Project Filters -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12 reveal">
+                <button class="project-filter active px-6 py-3 rounded-full border-2 border-sage text-sage font-medium" data-filter="all">
+                    All Projects
+                </button>
+                <button class="project-filter px-6 py-3 rounded-full border-2 border-sage text-sage font-medium" data-filter="web">
+                    Web Development
+                </button>
+                <button class="project-filter px-6 py-3 rounded-full border-2 border-sage text-sage font-medium" data-filter="data">
+                    Data Analysis
+                </button>
+                <button class="project-filter px-6 py-3 rounded-full border-2 border-sage text-sage font-medium" data-filter="documentation">
+                    Documentation
+                </button>
+            </div>
+            
+            <!-- Projects Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1: Portfolio Website -->
+                <div class="project-card card-hover bg-white rounded-2xl overflow-hidden shadow-lg" data-category="web">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/firmbee.com/caa4008f2623a7f5295a6a86077206fbb4be0230.png" 
+                             alt="Portfolio Website" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">HTML</span>
+                            <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">CSS</span>
+                            <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">JavaScript</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-charcoal mb-3">Personal Portfolio Website</h3>
+                        <p class="text-gray-600 mb-4">
+                            A sophisticated, interactive portfolio website showcasing my development skills 
+                            with modern design principles and smooth animations.
+                        </p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sage hover:text-terracotta font-medium">Live Demo</a>
+                            <a href="#" class="text-sage hover:text-terracotta font-medium">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 2: LaTeX CV -->
+                <div class="project-card card-hover bg-white rounded-2xl overflow-hidden shadow-lg" data-category="documentation">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/cdn-images.zety.com/bc7e223230dbcabb0821f8f08511697f679f7663.jpg" 
+                             alt="LaTeX CV Design" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-terracotta/10 text-terracotta text-sm rounded-full">LaTeX</span>
+                            <span class="px-3 py-1 bg-terracotta/10 text-terracotta text-sm rounded-full">Typesetting</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-charcoal mb-3">Professional LaTeX CV</h3>
+                        <p class="text-gray-600 mb-4">
+                            An elegant, professionally typeset curriculum vitae using LaTeX, 
+                            demonstrating attention to detail and document design expertise.
+                        </p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sage hover:text-terracotta font-medium">View PDF</a>
+                            <a href="#" class="text-sage hover:text-terracotta font-medium">Source</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 3: Data Analysis -->
+                <div class="project-card card-hover bg-white rounded-2xl overflow-hidden shadow-lg" data-category="data">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/chartexpo.com/cc078f1e6b2e737f00db9ff60eaffe8d3d876fe1.jpg" 
+                             alt="Data Analysis Visualization" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Python</span>
+                            <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Jupyter</span>
+                            <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Data Viz</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-charcoal mb-3">Gapminder Data Analysis</h3>
+                        <p class="text-gray-600 mb-4">
+                            Comprehensive analysis of the Gapminder dataset, revealing societal trends 
+                            and correlations across countries and regions through interactive visualizations.
+                        </p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sage hover:text-terracotta font-medium">View Analysis</a>
+                            <a href="#" class="text-sage hover:text-terracotta font-medium">Notebook</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-4xl lg:text-5xl font-bold text-charcoal mb-6">Technical Skills</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    A comprehensive overview of my technical capabilities and ongoing learning journey
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-16">
+                <!-- Skills Chart -->
+                <div class="reveal">
+                    <div class="bg-gray-50 rounded-2xl p-8">
+                        <h3 class="font-display text-2xl font-bold text-charcoal mb-6">Skill Proficiency</h3>
+                        <div id="skills-chart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                </div>
+                
+                <!-- Skills List -->
+                <div class="reveal">
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="font-display text-2xl font-bold text-charcoal mb-6">Technologies</h3>
+                            <div class="space-y-6">
+                                <div class="skill-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-medium text-charcoal">HTML/CSS</span>
+                                        <span class="text-sage text-sm">Advanced</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="skill-bar w-[85%] h-2 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-medium text-charcoal">JavaScript</span>
+                                        <span class="text-sage text-sm">Intermediate</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="skill-bar w-[70%] h-2 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-medium text-charcoal">Git/GitHub</span>
+                                        <span class="text-sage text-sm">Advanced</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="skill-bar w-[80%] h-2 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-medium text-charcoal">LaTeX</span>
+                                        <span class="text-sage text-sm">Advanced</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="skill-bar w-[75%] h-2 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-medium text-charcoal">Jupyter/Python</span>
+                                        <span class="text-sage text-sm">Intermediate</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="skill-bar w-[65%] h-2 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-medium text-charcoal">Linux Shell</span>
+                                        <span class="text-sage text-sm">Intermediate</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="skill-bar w-[60%] h-2 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-display text-2xl font-bold text-charcoal mb-6">Currently Learning</h3>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="px-4 py-2 bg-sage/10 text-sage rounded-full">React.js</span>
+                                <span class="px-4 py-2 bg-sage/10 text-sage rounded-full">Node.js</span>
+                                <span class="px-4 py-2 bg-sage/10 text-sage rounded-full">TypeScript</span>
+                                <span class="px-4 py-2 bg-sage/10 text-sage rounded-full">Tailwind CSS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section id="experience" class="py-20 bg-ivory">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-4xl lg:text-5xl font-bold text-charcoal mb-6">My Journey</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Key milestones in my professional and educational development
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="space-y-12">
+                    <div class="timeline-item reveal">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <h3 class="font-display text-xl font-bold text-charcoal">Software Developer</h3>
+                                <span class="text-sage font-medium">2023 - Present</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">
+                                Currently focused on building modern web applications and expanding my technical skill set 
+                                in frontend development, data analysis, and technical documentation.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Web Development</span>
+                                <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Data Analysis</span>
+                                <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Technical Writing</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item reveal">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <h3 class="font-display text-xl font-bold text-charcoal">Research & Analysis</h3>
+                                <span class="text-sage font-medium">2022 - 2023</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">
+                                Engaged in comprehensive data analysis projects, including the Gapminder dataset study, 
+                                developing skills in statistical analysis and data visualization techniques.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-terracotta/10 text-terracotta text-sm rounded-full">Data Science</span>
+                                <span class="px-3 py-1 bg-terracotta/10 text-terracotta text-sm rounded-full">Visualization</span>
+                                <span class="px-3 py-1 bg-terracotta/10 text-terracotta text-sm rounded-full">Research</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item reveal">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <h3 class="font-display text-xl font-bold text-charcoal">Technical Documentation</h3>
+                                <span class="text-sage font-medium">2021 - 2022</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">
+                                Developed expertise in technical documentation and typesetting, mastering LaTeX for 
+                                professional document creation and academic writing.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">LaTeX</span>
+                                <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Documentation</span>
+                                <span class="px-3 py-1 bg-sage/10 text-sage text-sm rounded-full">Typesetting</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-4xl lg:text-5xl font-bold text-charcoal mb-6">Get In Touch</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Interested in working together or have a question? I'd love to hear from you.
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-16">
+                <!-- Contact Form -->
+                <div class="reveal">
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-charcoal mb-2">Name</label>
+                                <input type="text" id="name" name="name" required
+                                       class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-charcoal mb-2">Email</label>
+                                <input type="email" id="email" name="email" required
+                                       class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-charcoal mb-2">Subject</label>
+                            <input type="text" id="subject" name="subject" required
+                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-charcoal mb-2">Message</label>
+                            <textarea id="message" name="message" rows="6" required
+                                      class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary w-full text-white px-8 py-4 rounded-lg font-medium">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="reveal">
+                    <div class="space-y-8">
+                        <div class="bg-gray-50 rounded-2xl p-8">
+                            <h3 class="font-display text-2xl font-bold text-charcoal mb-6">Contact Information</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-sage/10 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-charcoal">Email</p>
+                                        <p class="text-gray-600">ahmedandoma@gmail.com</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-sage/10 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-charcoal">Location</p>
+                                        <p class="text-gray-600">Germany</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-2xl p-8">
+                            <h3 class="font-display text-2xl font-bold text-charcoal mb-6">Connect With Me</h3>
+                            <div class="flex gap-4">
+                                <a href="https://github.com/ahmedhussainnn/" target="_blank" 
+                                   class="w-12 h-12 bg-sage/10 rounded-lg flex items-center justify-center hover:bg-sage hover:text-white transition-all">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    </svg>
+                                </a>
+                                <a href="mailto:ahmedandoma@gmail.com" 
+                                   class="w-12 h-12 bg-sage/10 rounded-lg flex items-center justify-center hover:bg-sage hover:text-white transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-charcoal text-white py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center">
+                <div class="font-display text-2xl font-bold text-gradient mb-4">
+                    Ahmed Usman Hussain
+                </div>
+                <p class="text-gray-400 mb-6">
+                    Software Developer crafting elegant solutions to complex problems
+                </p>
+                <div class="flex justify-center gap-6 mb-8">
+                    <a href="https://github.com/ahmedhussainnn/" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="mailto:ahmedandoma@gmail.com" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </a>
+                </div>
+                <div class="border-t border-gray-700 pt-8">
+                    <p class="text-gray-400 text-sm">
+                        © 2024 Ahmed Usman Hussain. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
